@@ -1,0 +1,10 @@
+importFrom(rtracklayer, "export")
+importFrom(rtracklayer, "import")
+
+export("csawDomainCalling",
+       "domainCallingFromBed",
+       "getSpikeNormFactor",
+       "getSampleInfo",
+       "makeBedGraphPerSample",
+       "makeBedGraph",
+       "getAnnotationFromGR")

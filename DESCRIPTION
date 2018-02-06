@@ -1,0 +1,13 @@
+Package: domainCalling
+Version: 1.0.2
+Title: Tools for domain calling using csaw pipeline
+Author: Chao-Jen Wong
+Maintainer: Chao-Jen Wong <cwon2@fredhutch.org>
+Depends:  R (>= 3.4), csaw, Rsamtools
+Imports: BiocParallel, rtracklayer
+Suggests: TxDb.Hsapiens.UCSC.hg19.ensGene
+Description: Tools for domain calling built upon the csaw pipeline. Designed for CutAndRun-seq data with large, diffused binding domains (~20k). Tested and built under R3.4/Bioc3.5.
+License: Artistic-2.0
+LazyLoad: yes
+VignetteBuilder: knitr
+Collate: tools.R getSampleInformation.R makeBedGraphPerSample.R domainCalling.R getAnnotaion.R zzz.R
