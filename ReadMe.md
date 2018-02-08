@@ -1,8 +1,7 @@
 # domainCalling
 
 _domainCalling_ is a R/Bioconductor package, and it has been tested on R 3.4.0/Bioc 3.5. This package is designed for
-detection of binding regions, particularly from CutAndRun-seq (CAR-seq) data. It provides tools for domain/peak calling 
-and annotation tools, which are built upon the _csaw_ and _ChIPseeker_ packages, respectively.
+detection of brought range of non-coding transcripts (from total RNA-seq) or binding regions, particularly from CutAndRun-seq (CAR-seq) data.
 
 ### Requirement
 You will need to install _csaw_, _edgeR_ and _ChIPseeker_ packages. A TxDb with a compatible org db package for 
