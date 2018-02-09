@@ -47,20 +47,6 @@ getLogCPM <- function(data) {
     data <- data[keep]
 }
 
-.normCntsBySpikeFactor <- function(data, norm.factors) {
-    #' sanity check
-    if (is.null(norm.factors)) {
-        stop("The norm.factors are NULL", call.=FALSE)
-    }
-    #' scaling by dividing the norm.factors
-    cnt <- assays(data)[["counts"]]
-    scale <- matrix(rep(norm.factors, nrow(data)), nrow=nrow(data))
-    cnt <- cnt / scale
-    assays(data)[["counts"]] <- cnt
-    data$totals <- data$totals / norm.factors
-    data
-}
-
 .addColData <- function(data, sample_info) {
     #' add spike factor rownames
     colnames(data) <- rownames(sample_info$sample_name)
@@ -93,6 +79,29 @@ addSpikeFactor <- function(si, multiplying_factor=NA) {
     si$spike_factor_edgeR <-
         domainCalling:::getSpikeNormFactor(si, fragment)
     si
+}
+
+estimateSpikeFactor <- function(si, method=c("csaw", "simple_ratio"), multiplying_factor=NA) {
+    #' check si, must be the regular si structure
+    method <- match.arg(method, c("csaw", "simple_ratio"))
+    if (method == "simple_ratio") {
+        if (is.na(multiplying_factor)) {
+            md <- median(si$spike_count)
+            message("estimateSpikeFactor: mutliplying factor not provided, deafult to median of spike count ", md) 
+            si$multiplying_factor <- md
+        }
+        spike_factor <- si$spike_count / median(si$spike_count)
+        names(spike_factor) <- rownames(si)
+    }
+    
+    if (method == "csaw") {
+    fragment <- list(init.ext=si$frag_length,
+                     final.txt=as.integer(mean(si$frag_length)))
+    spike_factor <-
+        domainCalling:::getSpikeNormFactor(si, fragment)
+    }
+    
+    spike_factor
 }
 
 saveDomains <- function(domains, destination=".", prefix=NULL) {
