@@ -10,21 +10,21 @@ removeDuplicates <- function(ga) {
     gr[!dup]
 }
 
-makeBedGraph <- function(sample_info, cores=2L,
-                         bigWig=TRUE,
+makeBedGraph <- function(sample_info, cores=1L,
                          scale=FALSE,
+                         scale_factor=NULL,
                          remove.duplicate=FALSE,
+                         max.fragment=700,
+                         min.fragment=0,
                          outDir=".") {
     require(parallel)
-    if (scale) {
-        if (!"spike_factor" %in% names(sample_info)) {
-            scale <- FALSE
-            stop("To scale the pileup, the sample_info must have column spike_factor. ")
-        }
+    ## sanity check: scale factor
+    if (scale & is.null(scale.factor)) {
+        stop("scale.factor is NULL.")
     }
 
     if (scale) {
-        message("Scaling pileup by spike_factor")
+        message("Scaling pileup by scale factor")
         mcmapply(makeBedGraphPerSample, sample_info$file_bam,
                  sample_info$spike_factor,
                  MoreArgs=list(bigWig=bigWig,
@@ -91,10 +91,10 @@ makeBedGraphPerSample <- function(bam_file,
     rtracklayer::export(cov , con=output, format="bedGraph")
     message("Exported ", output)
     #' output bigWig files
-    if (bigWig) {
-        output <- file.path(outDir, paste0(prefix, ".bw"))
-        rtracklayer::export(cov, con=output, format="BigWig")
-        message("Exported ", output) 
-    } 
+    #if (bigWig) {
+    #    output <- file.path(outDir, paste0(prefix, ".bw"))
+    #    rtracklayer::export(cov, con=output, format="BigWig")
+    #    message("Exported ", output) 
+    #} 
     return(invisible()) 
 }
