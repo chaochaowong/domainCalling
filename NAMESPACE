@@ -7,4 +7,5 @@ export("csawDomainCalling",
        "makeBedGraphPerSample",
        "makeBedGraph",
        "estimateSpikeFactor",
-       "getAnnotationFromGR")
+       "getAnnotationFromGR",
+       "calcDomainFPKM")
