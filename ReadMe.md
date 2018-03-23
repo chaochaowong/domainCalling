@@ -14,7 +14,7 @@ threshold. Finally, the retained windows are merged with neighbors within design
 binding regions of the protein. 
 
 ## Sample Information domainCalling::getSampleInfo()
-Providing a data.frame (or DataFrame) containing two columns named `sample_name`, `file_bam`, and `spike_bam` the user can 
+Providing a data.frame (or DataFrame) containing three columns named `sample_name`, `file_bam`, and `spike_bam` the user can 
 use getSampleInfo() to find information from the bam files including fragment size, library size, spike-in counts,
 single-ended or pair-ended. These inforamtion is needed to run csawDomainCalling().
 
