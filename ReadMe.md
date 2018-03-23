@@ -7,13 +7,23 @@ detection of broad range of non-coding transcripts (from total RNA-seq) or bindi
 You need the _csaw_, _edgeR_ and _ChIPseeker_ packages. A TxDb and a compatible org.xx.db package for annotation.
 
 # Using _csawDomainCalling()_
-This function uses window-based counting method provided by the _csaw_ package. It first counts the reads overlapping with a 
-sliding window. The second step is to filter out uninteresting windows in which the abounance of the non-background samples is
-lower then 3 fold change to the backgroud or does not exceed the threshold. Finally, the retained windows are merged with 
-neighbors within certain perimeters. The merged regions is the potential bind regions of the protein.
+This function uses window-based counting method provided by the _csaw_ package. It first counts reads overlapping with a 
+sliding window from non-background and background (if there is any) samples. Secondly it filters out uninteresting windows if
+the average abounance of the non-background samples is (1) lower then 3 fold change to the backgroud or (2) does not exceed the 
+threshold. Finally, the retained windows are merged with neighbors within designated perimeters. The merged regions is the potential 
+binding regions of the protein. 
 
-## Sample Information _domainCalling::getSampleInfo()_
+## Sample Information domainCalling::getSampleInfo()
+Providing a data.frame (or DataFrame) containing two columns named `sample_name`, `file_bam`, and `spike_bam` the user can 
+use getSampleInfo() to find information from the bam files including fragment size, library size, spike-in counts,
+single-ended or pair-ended. These inforamtion is needed to run csawDomainCalling().
 
-## Spike factor _domainCalling:::addSpikeFactor()_
+Need to add an example here
+
+## Spike factor domainCalling:::getSpikeNormFactor()
+The package provides a tool to estimate the normalization factor using spike-in sequence data. 
+
+Need to add an example here
 
 ## Workflow
+Need to add a workflow here
