@@ -18,16 +18,6 @@ calcDomainFPKM <- function(rse,
 }
 
 
-getScalingFactorPerSample <- function(spike_file, multiple.factor=10000) {
-    message(spike_file)
-    flag <- scanBamFlag(isUnmappedQuery = FALSE, isSecondaryAlignment = FALSE)
-    what <- c("qname", "flag", "qwidth", "isize")
-    param <- ScanBamParam(flag = flag, what = what, tag = "XS")
-    cnt <- countBam(spike_file, param=param)
-    print(cnt)
-    multiple.factor/(cnt$records[1]/2)
-}
-
 bedGraphToBigWig <- function(bdg_file, outDir=".") {
     if (!file.exists(outDir)) stop("Output directory does not exist.")
     
@@ -38,10 +28,6 @@ bedGraphToBigWig <- function(bdg_file, outDir=".") {
     export(gr, con=file, format="BigWig")              
     message(prefix)
 }
-
-
-
-
 
 alternativeAnnotation <- function(peaks.gr, txdb, orgDb) {
     genes <- genes(txdb)
@@ -88,7 +74,7 @@ alternativeAnnotation <- function(peaks.gr, txdb, orgDb) {
 
 sanitizeAnnotation <- function(peaks.gr, EnsDb) {
     stop(is.null(peaks.gr$annotation))
-    #' Exon, Intron, Downstream (<=3kb) and distal intergenic
+    #' Simplify Exon, Intron, Downstream (<=3kb) and distal intergenic
     tmp <- sapply(strsplit(peaks.gr$annotation, " (", fixed=TRUE), "[[", 1)
     peaks.gr$simplified.anno <- tmp
 
