@@ -10,45 +10,30 @@ removeDuplicates <- function(ga) {
     gr[!dup]
 }
 
-makeBedGraph <- function(sample_info, cores=1L,
-                         scale=FALSE,
-                         scale_factor=NULL,
+makeFragCoverageBedGraph <- function(sample_info, cores=1L,
+                         norm.factor=rep(1, nrow(sample_info)),
                          remove.duplicate=FALSE,
                          max.fragment=700,
                          min.fragment=0,
                          outDir=".") {
     require(parallel)
-    ## sanity check: scale factor
-    if (scale & is.null(scale.factor)) {
-        stop("scale.factor is NULL.")
-    }
+    ## sanity check: norm.factor, valid length? 
+    if (length(norm.factor) != nrow(sample_info))
+        stop("Length of norm.factor must equal to the number of sample.")
 
-    if (scale) {
-        message("Scaling pileup by scale factor")
-        mcmapply(makeBedGraphPerSample, sample_info$file_bam,
-                 sample_info$spike_factor,
-                 MoreArgs=list(bigWig=bigWig,
-                     remove.duplicate=remove.duplicate,
-                     outDir=outDir),
-                 mc.cores=cores, mc.preschedule=FALSE)
-    } else
-        mclapply(sample_info$file_bam, makeBedGraphPerSample,
-                 scaling_factor=NULL,
-                 bigWig=bigWig,
-                 remove.duplicate=remove.dupulicate,
-                 outDir=outDir,
-                 mc.cores=cores, mc.preschedule=FALSE)
-        #lapply(sample_info$file_bam, makeBedGraphPerSample,
-        #       scaling_factor=NULL,
-        #       bigWig=bigWig,
-        #       remove.duplicate=remove.dupulicate,
-        #       outDir=outDir)
+    message("Scaling pileup by scale factor")
+    mcmapply(makeBedGraphPerSample, sample_info$file_bam,
+             norm.factor,
+             MoreArgs=list(bigWig=bigWig,
+                 remove.duplicate=remove.duplicate,
+                 outDir=outDir),
+             mc.cores=cores, mc.preschedule=FALSE)
 
     return(invisible())
 }
 
 makeBedGraphPerSample <- function(bam_file, 
-                                  scaling_factor=NULL, bigWig=TRUE,
+                                  norm.factor=NULL, bigWig=TRUE,
                                   remove.duplicate=FALSE,
                                   outDir=".") {
     #' this funciton makes spike-normalized pileup bedGraph (bg) and bigWig (bw)
