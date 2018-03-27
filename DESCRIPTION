@@ -1,5 +1,5 @@
 Package: domainCalling
-Version: 1.0.3
+Version: 1.0.4
 Title: Tools for domain calling using csaw pipeline
 Author: Chao-Jen Wong
 Maintainer: Chao-Jen Wong <cwon2@fredhutch.org>
@@ -10,4 +10,4 @@ Description: Tools for domain calling built upon the csaw pipeline. Designed for
 License: Artistic-2.0
 LazyLoad: yes
 VignetteBuilder: knitr
-Collate: tools.R getSampleInformation.R makeBedGraphPerSample.R domainCalling.R getAnnotaion.R zzz.R
+Collate: tools.R getDomainTagMatrix.R getSampleInformation.R makeBedGraphPerSample.R domainCalling.R getAnnotaion.R zzz.R
