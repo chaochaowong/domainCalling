@@ -82,7 +82,7 @@ addSpikeFactor <- function(si, multiplying_factor=NA) {
 }
 
 estimateSpikeFactor <- function(si, method=c("csaw", "simple_ratio"), multiplying_factor=NA) {
-    #' check si, must be the regular si structure
+    #' sanitized check si, must be the regular si structure (spike bam? lib_size?)
     method <- match.arg(method, c("csaw", "simple_ratio"))
     if (method == "simple_ratio") {
         if (is.na(multiplying_factor)) {
@@ -118,8 +118,8 @@ saveDomains <- function(domains, destination=".", prefix=NULL) {
 }
 
 csawDomainCalling <- function(sample_info,
-                              PE=TRUE,
                               background_idx=NULL,
+                              paired.end=TRUE,
                               minq=0,
                               discard=GRanges(),
                               threshold=5L,
@@ -128,7 +128,6 @@ csawDomainCalling <- function(sample_info,
                               spacing=100, 
                               dedup=FALSE,
                               restrict=NULL,
-                              spikeNorm=FALSE,
                               norm.factors=rep(1, nrow(sample_info)),
                               filter.By.GlobalEnrichment=FALSE,
                               min.width=300,
@@ -157,13 +156,13 @@ csawDomainCalling <- function(sample_info,
                        discard=discard,
                        BPPARAM=bpparam)
     #' fix for single-end
-    if (!PE) {
+    if (!paired.end) {
         param <- reform(param, pe="none")
         fragment <- mean(sample_info$read_length)
     }
 
     #' sanity check on the validity of norm.factors
-    if (!spikeNorm) norm.factors <- rep(1, nrow(sample_info))
+    #if (!spikeNorm) norm.factors <- rep(1, nrow(sample_info))
 
     print(param)
     
