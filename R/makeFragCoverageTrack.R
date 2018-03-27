@@ -26,10 +26,8 @@ makeFragCoverageTrack <- function(sample_info,
     if (!file.exists(destination)) stop(destination, " does not exists.")
     if (length(norm.factors) != nrow(sample_info))
         stop("The length of norm.factor must equal to the number of sample.")
-    if (! is.numeric(norm.factor))
-        stop("norm.factor must be a numeric")
-    if (any(norm.factor > 1) | any(norm.factor < 0))
-        stop("The norm factor muct be numeric within the range [0, 1].")
+    if (any(!is.numeric(norm.factors) | norm.factors < 0))
+        stop("norm.factors muct be positive numeric")
     if (!all(file.exists(sample_info$file_bam)))
         stop("Not all bam files exist.")
    
@@ -70,12 +68,8 @@ makeFragCovPerSample <- function(bam_file,
     #' checking inputs
     if (!file.exists(bam_file)) stop(bam_file, " does not exists")
     if (!file.exists(destination)) stop(destination, " does not exists.")
-    if (! is.numeric(norm.factor))
-        stop("norm.factor must be a numeric")
-    if (!is.null(norm.factor)) {
-        if (norm.factor > 1 | norm.factor < 0) 
-            stop("Scaling factor must be NULL or a numeric within the range of (0, 1). Setting scaling factor to NULL")
-    }
+    if (!is.numeric(norm.factor) | norm.factor < 0) 
+        stop("norm.factor must be positive numeric")
 
     flag <- scanBamFlag(isUnmappedQuery = FALSE, isSecondaryAlignment = FALSE)
     what <- c("qname", "flag", "qwidth", "isize")
