@@ -13,7 +13,7 @@ removeDuplicates <- function(ga) {
 
 
 makeFragCoverageTrack <- function(sample_info, 
-                                  norm.factors=rep(1, nrow(sample_info)),
+                                  norm.factors=rep(1L, nrow(sample_info)),
                                   format=c("bedGraph", "BigWig", "both"),
                                   paired.end=TRUE,
                                   destination=".",
@@ -45,20 +45,20 @@ makeFragCoverageTrack <- function(sample_info,
     gr <- granges(ga)
     idx <- width(gr) <= max.fragment 
     if (min.fragment > 0)
-        idx <- idx & width(gr) >=min.fragment
+        idx <- idx & width(gr) >= min.fragment
 
     ga <- ga[idx]
 }
 
 makeFragCovPerSample <- function(bam_file, 
-                                 norm.factor=1,
+                                 norm.factor=1L,
                                  format=c("bedGraph", "BigWig", "both"),
                                  paired.end=TRUE,
                                  destination=".",
                                  filter.by.fragment=FALSE,
                                  min.fragment=0, max.fragment=800) {
-    #' this funciton makes spike-normalized pileup bedGraph (bg) and bigWig (bw)
-    #' files
+    #' this funciton makes spike-normalized fragment coverage bedGraph (bg) and
+    #' bigWig (bw) files
     require(GenomicAlignments)
     require(rtracklayer)
 
@@ -75,7 +75,7 @@ makeFragCovPerSample <- function(bam_file,
     what <- c("qname", "flag", "qwidth", "isize")
     param <- ScanBamParam(flag = flag, what = what, tag = "XS")
 
-    #' if pair-ended, use readGAlignmetnPairs. if single-ended, use readGalignmetnPair
+    #' if pair-ended, use readGAlignmetnPairs. if single-ended, use readGAlignments
     if (paired.end) { #' for pair-ended
         flag <- scanBamFlag(isUnmappedQuery = FALSE, isSecondaryAlignment = FALSE,
                             isPaired=TRUE, isProperPair=TRUE)
@@ -83,7 +83,7 @@ makeFragCovPerSample <- function(bam_file,
         ga <- readGAlignmentPairs(bam_file, param=param)
     }
     else {#' for single-ended
-        ga <-  readGAlignmentPairs(bam_file, param=param)
+        ga <-  readGAlignments(bam_file, param=param)
     }
     
 
@@ -101,9 +101,13 @@ makeFragCovPerSample <- function(bam_file,
 
     weight <- 1/norm.factor
     prefix <- sub(".bam", "", basename(bam_file))
-    prefix <- paste0(prefix, "_scalledBy_", format(weight, digit=3))
     message("Getting coverage ...")
-    cov <- GenomicAlignments::coverage(ga, weight=weight)
+    if (norm.factor != 1) {
+        #' append scaling factor to prefix
+        prefix <- paste0(prefix, "_scalledBy_", format(weight, digit=3))
+        cov <- GenomicAlignments::coverage(ga, weight=weight)
+    } else
+        cov <- GenomicAlignments::coverage(ga)
     
     #' output bedGraph files
     if (format %in% c("bedGraph", "both")) {
@@ -113,7 +117,7 @@ makeFragCovPerSample <- function(bam_file,
     }
     #' output bigWig files
     if (format %in% c("BigWig", "both")) {
-        output <- file.path(destination, paste0(prefix, ".bw"))
+        output <- file.path(destination, paste0(prefix, ".bigWig"))
         message("Exporting ", output) 
         rtracklayer::export(cov, con=output, format="BigWig")
     } 
