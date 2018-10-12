@@ -6,7 +6,6 @@ export("csawDomainCalling",
        "getSampleInfo",
        "makeFragCoverageTrack",
        "makeFragCovPerSample",
-       "makeBedGraph",
        "estimateSpikeFactor",
        "getAnnotationFromGR",
        "calcDomainFPKM")
