@@ -51,8 +51,8 @@ getAnnotationFromGR.2 <- function(rse, TxDb, annoDb=NULL, rmsk=NULL,
         peaks.gr$name <- names(peaks.gr)
 
     peakAnno <- annotatePeak(peaks.gr, tssRegion = c(-3000, 3000),
-                             genomicAnnotationPriority=c("Exon", "Intron",
-                                 "Promoter", "5UTR", "3UTR",
+                             genomicAnnotationPriority=c("5UTR", "Exon", "Intron",
+                                 "Promoter", "3UTR",
                                  "Downstream", "Intergenic"),
                              overlap="all",
                              TxDb = TxDb, annoDb = annoDb)

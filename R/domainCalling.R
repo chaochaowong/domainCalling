@@ -118,23 +118,25 @@ saveDomains <- function(domains, destination=".", prefix=NULL) {
 }
 
 csawDomainCalling <- function(sample_info,
-                              background_idx=NULL,
-                              paired.end=TRUE,
-                              minq=0,
-                              discard=GRanges(),
-                              threshold=5L,
-                              window.spacing=100, 
-                              window.width=window.spacing,
-                              spacing=100, 
-                              dedup=FALSE,
-                              restrict=NULL,
-                              norm.factors=rep(1, nrow(sample_info)),
-                              filter.By.GlobalEnrichment=FALSE,
-                              min.width=300,
-                              max.width=30000,
-                              window.gapwidth=2000,
+                              background_idx = NULL,
+                              paired.end = TRUE,
+                              minq = 0,
+                              discard = GRanges(),
+                              threshold = 5L,
+                              window.spacing = 100, 
+                              window.width = window.spacing,
+                              spacing = 100, 
+                              dedup = FALSE,
+                              restrict = NULL,
+                              norm.factors = rep(1, nrow(sample_info)),
+                              filter.By.GlobalEnrichment = FALSE,
+                              max.frag = 700,
+                              min.width = 300,
+                              max.width = 10000,
+                              window.gapwidth = 2000,
                               cores=1L,
                               destination=".",
+                              spikeNorm=FALSE,
                               prefix=NULL) {
 
     #' use sliding window but find significant changes in binding patterns
@@ -142,7 +144,7 @@ csawDomainCalling <- function(sample_info,
         
     #' sanity check: sample_info
     #' need sanity on the input parameters
-    #checkSampleInfoInput(sample_info, initialize=FALSE)
+    #' checkSampleInfoInput(sample_info, initialize=FALSE)
 
     bam_files <- sample_info$file_bam
     fragment <- list(init.ext=sample_info$frag_length,
@@ -151,7 +153,7 @@ csawDomainCalling <- function(sample_info,
     require(BiocParallel)
        
     bpparam <- SnowParam(worker=cores)
-    param <- readParam(pe="both", max.frag=700, dedup=dedup,
+    param <- readParam(pe="both", max.frag=max.frag, dedup=dedup,
                        restrict=restrict, minq=minq,
                        discard=discard,
                        BPPARAM=bpparam)
@@ -220,14 +222,15 @@ csawDomainCalling <- function(sample_info,
         data <- data[keep]
         #' filter by average count size (average over the non_background samples)
         data <- .filterByAvgCount(data, threshold)
-    }
+    } 
 
     #' cluster windows into regions
     merged <- mergeWindows(data, tol=window.gapwidth, max.width=max.width)
     
     length(merged$region)
     summary(width(merged$region))
-    
+
+
     merged_counts <- regionCounts(bam_files, merged$region, ext=fragment,
                                   param=param)
     #' filter by min.width
@@ -239,7 +242,8 @@ csawDomainCalling <- function(sample_info,
     rownames(merged_counts) <- paste0("domain_", 1:nrow(merged_counts))
     merged_counts$norm.factors <- norm.factors
     assays(merged_counts)[["logCPM"]] <-  getLogCPM(merged_counts)
-    
+    #' add FPKM 
+    assays(merged_counts)$FPKM <- calcDomainFPKM(merged_counts)
     saveDomains(merged_counts, destination=destination, prefix=prefix)
     
     return(merged_counts)
