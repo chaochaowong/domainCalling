@@ -134,7 +134,7 @@ csawDomainCalling <- function(sample_info,
                               min.width = 300,
                               max.width = 10000,
                               window.gapwidth = 2000,
-                              cores=1L,
+                              BPPARAM = BiocParallel::registered()[[1]],
                               destination=".",
                               spikeNorm=FALSE,
                               prefix=NULL) {
@@ -145,18 +145,18 @@ csawDomainCalling <- function(sample_info,
     #' sanity check: sample_info
     #' need sanity on the input parameters
     #' checkSampleInfoInput(sample_info, initialize=FALSE)
+    #require(BiocParallel)
+    #require(csaw)
 
     bam_files <- sample_info$file_bam
     fragment <- list(init.ext=sample_info$frag_length,
                      final.txt=as.integer(mean(sample_info$frag_length)))
-    require(csaw)
-    require(BiocParallel)
-       
-    bpparam <- SnowParam(worker=cores)
+
+    #bpparam <- MulticoreParam(worker=cores)
     param <- readParam(pe="both", max.frag=max.frag, dedup=dedup,
                        restrict=restrict, minq=minq,
                        discard=discard,
-                       BPPARAM=bpparam)
+                       BPPARAM=BPPARAM)
     #' fix for single-end
     if (!paired.end) {
         param <- reform(param, pe="none")
@@ -167,6 +167,7 @@ csawDomainCalling <- function(sample_info,
     #if (!spikeNorm) norm.factors <- rep(1, nrow(sample_info))
 
     print(param)
+    
     
     #' (1) NO background; use count based filter (count > threshold)
     if (is.null(background_idx)) {
@@ -223,6 +224,14 @@ csawDomainCalling <- function(sample_info,
         #' filter by average count size (average over the non_background samples)
         data <- .filterByAvgCount(data, threshold)
     } 
+    
+    #' sanity check
+    if (nrow(data) == 0) {
+        warning(prefix, " does not have enriched domains")
+        return(GRanges())
+    }
+
+
 
     #' cluster windows into regions
     merged <- mergeWindows(data, tol=window.gapwidth, max.width=max.width)
