@@ -1,10 +1,10 @@
 # domainCalling
 
-_domainCalling_ is a R/Bioconductor package, and it has been tested on R 3.4.0/Bioc 3.5. This package is designed for
-detection of broad range of non-coding transcripts (from total RNA-seq) or binding regions, particularly from CutAndRun-seq (CAR-seq) data.
+The _domainCalling_ package is a R/Bioconductor package, and it has been tested on R 3.4.0/Bioc 3.5. This package 
+detects broad range of non-coding transcripts (from total RNA-seq) or binding regions, particularly from CutAndRun-seq (CAR-seq) data.
 
 ### Requirement
-You need the _csaw_, _edgeR_ and _ChIPseeker_ packages. A TxDb and a compatible org.xx.db package for annotation.
+You need the _csaw_, _edgeR_ and _ChIPseeker_ packages. A TxDb and compatible BSgome org.xx.db package for annotation.
 
 # Using _csawDomainCalling()_
 This function uses window-based counting method provided by the _csaw_ package. It first counts reads overlapping with a 
@@ -23,7 +23,3 @@ Need to add an example here
 ## Spike factor domainCalling:::getSpikeNormFactor()
 The package provides a tool to estimate the normalization factor using spike-in sequence data. 
 
-Need to add an example here
-
-## Workflow
-Need to add a workflow here
